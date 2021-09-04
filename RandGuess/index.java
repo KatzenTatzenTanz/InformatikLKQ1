@@ -34,7 +34,8 @@ public class index extends Application {
         r.setAlignment(Pos.CENTER);
 
         //Declare IO
-        input = new TextField("Enter a Number:");
+        input = new TextField("");
+        input.setPromptText("Enter a number:");
         //Regex remove !0-9 ....
         input.setOnKeyTyped(event -> {
             if(!input.getText().matches("\\d*")) input.setText(input.getText().replaceAll("[^\\d]",""));
