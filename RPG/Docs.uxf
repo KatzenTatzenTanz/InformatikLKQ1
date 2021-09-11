@@ -1,0 +1,34 @@
+<diagram program="umletino" version="14.4.0-SNAPSHOT"><zoom_level>10</zoom_level><element><id>UMLClass</id><coordinates><x>60</x><y>80</y><w>210</w><h>170</h></coordinates><panel_attributes>_object: Hero_
+--
+- Weapon weapon;
+- String name;
+- int hp;
+- int def;
+- int Type;
+--
+c Hero(ALL VARIABLES)
++ int attack(enemy)
++ String toString()
++ Node toUI()</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>280</x><y>80</y><w>210</w><h>180</h></coordinates><panel_attributes>_object: Enemy_
+--
+- Weapon weapon;
+- String name;
+- int hp;
+- int def;
+- int Type;
+--
+c Enemy(Enemy)
+c Enemy(ALL VARIABLES)
++ int attack(Hero)
++ String toString()
++ Node toUI()</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>500</x><y>80</y><w>210</w><h>170</h></coordinates><panel_attributes>_object: Weapon_
+--
+- String name;
+- int[] damage;
+- int Type;
+--
+c Weapon(Weapon)
+c Weapon(ALL VARIABLES)
++ int attack()
++ String toString()
++ Node toUI()</panel_attributes><additional_attributes></additional_attributes></element></diagram>
