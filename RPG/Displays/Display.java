@@ -1,6 +1,8 @@
 package Displays;
 
-import Utility.Comms;
+import Statics.Manager;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
@@ -15,21 +17,19 @@ import javafx.stage.Stage;
  * index
  */
 public class Display extends Stage {
-
-    private static Comms communicator;
     private VBox r;
 
-    public Display(Comms arg0) {
+    public Display() {
         super();
+        Manager.C.addWindow(this);
 
-        communicator = arg0;
-        communicator.setDisplay(this);
+        Manager.C.setDisplay(this);
         // Window Setup
         this.setTitle("Fight!");
 
         r = createFightMainUI();
 
-        Update();
+        update();
         
         Scene sc = new Scene(r, 700, 500);
         this.setOnShown(event -> {
@@ -38,23 +38,30 @@ public class Display extends Stage {
         });
         this.setScene(sc);
         this.setOnCloseRequest(event -> {
-            communicator.getUtility().close();
-            communicator.getLoadout().close();
-            communicator.getConsole().close();
+            Manager.C.command("closeWindows");
             this.close();
+        });
+        this.focusedProperty().addListener(new ChangeListener<Boolean>() {
+
+            @Override
+            public void changed(ObservableValue<? extends Boolean> arg0, Boolean arg1, Boolean arg2) {
+                if(!arg1 && arg2)
+                    Manager.C.command("openWindows");
+            }
+            
         });
         // Display Screen
         this.setResizable(false);
         this.show();
     }
 
-    public void Update() {
+    public void update() {
         FlowPane Hero = getHeroUI(r);
         HBox Enemies = getEnemyHeadUI(r);
-        getHeroHealth(Hero).setText(Integer.toString(communicator.getHero().getHp()));
-        getHeroName(Hero).setText(communicator.getHero().getName());
+        getHeroHealth(Hero).setText(Integer.toString(Manager.C.getHero().getHp()));
+        getHeroName(Hero).setText(Manager.C.getHero().getName());
 
-        int enemysize = communicator.getEnemies().size();
+        int enemysize = Manager.C.getEnemies().size();
 
         for(int i = Enemies.getChildren().size(); i < enemysize; ++i) {
             Enemies.getChildren().add(createEnemyUI());
@@ -64,7 +71,7 @@ public class Display extends Stage {
                 int index = cur;
                 @Override
                 public void handle(MouseEvent arg0) {
-                    new Inspect(communicator.getEnemies().get(index));
+                    new Inspect(Manager.C.getEnemies().get(index));
                 }
             });
         }
@@ -72,8 +79,8 @@ public class Display extends Stage {
             Enemies.getChildren().remove(0);
 
         for(int i = 0; i < enemysize; ++i) {
-            getEnemyHealth((FlowPane)Enemies.getChildren().get(i)).setText(Integer.toString(communicator.getEnemies().get(i).getHp()));
-            getEnemyName((FlowPane)Enemies.getChildren().get(i)).setText(communicator.getEnemies().get(i).getName());
+            getEnemyHealth((FlowPane)Enemies.getChildren().get(i)).setText(Integer.toString(Manager.C.getEnemies().get(i).getHp()));
+            getEnemyName((FlowPane)Enemies.getChildren().get(i)).setText(Manager.C.getEnemies().get(i).getName());
         }
     }
 
@@ -100,7 +107,7 @@ public class Display extends Stage {
         HeroStats.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent arg0) {
-                new Inspect(communicator.getHero());
+                new Inspect(Manager.C.getHero());
             }
         });
         r.getChildren().addAll(Enemies,HeroStats);

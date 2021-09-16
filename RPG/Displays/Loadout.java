@@ -1,7 +1,6 @@
 package Displays;
+import Statics.Manager;
 import Structs.Weapon;
-
-import Utility.Comms;
 
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -14,26 +13,21 @@ import javafx.stage.Stage;
  */
 public class Loadout extends Stage {
 
-    private Comms communicator;
-    public Loadout(Comms arg0, double x, double y) {
-        this(arg0);
+    private VBox r = new VBox();
+    public Loadout(double x, double y) {
+        this();
         this.setX(x);
         this.setY(y);
     }
     
-    public Loadout(Comms arg0) {
+    public Loadout() {
         super();
-        communicator = arg0;
-        communicator.setLoadout(this);
+        Manager.C.setLoadout(this);
+        Manager.C.addWindow(this);
         // Window Setup
         this.setTitle("Inventory");
-        VBox r = new VBox();
         r.setSpacing(24);
-        for (Weapon we : communicator.getWeapons()) {
-            r.getChildren().add(we.toUI());
-        }
-        r.setAlignment(Pos.TOP_LEFT);
-
+        update();
         ScrollPane tr = new ScrollPane(r);
         tr.setHbarPolicy(ScrollBarPolicy.NEVER);
 
@@ -44,10 +38,19 @@ public class Loadout extends Stage {
         });
         this.setScene(sc);
         this.setOnCloseRequest(event -> {
-            new Loadout(communicator,this.getX(),this.getY());
+            new Loadout(this.getX(),this.getY());
         });
         // Display Screen
         this.setResizable(false);
         this.show();
+    }
+
+
+    public void update() {
+        r.getChildren().clear();
+        for (Weapon we : Manager.C.getWeapons()) {
+            r.getChildren().add(we.toUI());
+        }
+        r.setAlignment(Pos.TOP_LEFT);
     }
 }

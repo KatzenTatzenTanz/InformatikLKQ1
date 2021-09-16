@@ -111,7 +111,7 @@ public class Hero implements Inspectable {
     @Override
     public Node toUI() {
         VBox r = new VBox();
-        r.getChildren().add(new Text("Enemy: " + getName()));
+        r.getChildren().add(new Text("Heroic Name: " + getName()));
         r.getChildren().add(new Text("HP: " + getHp()));
         r.getChildren().add(new Text("Def: " + getDef()));
         r.getChildren().add(new Text("Type: " + TypeWeakness.getName(getType())));

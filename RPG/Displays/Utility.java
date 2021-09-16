@@ -1,12 +1,13 @@
 package Displays;
 
-import java.util.ArrayDeque;
+import java.util.Vector;
 
+import Statics.Manager;
 import Structs.Enemy;
 import Structs.Weapon;
-import Utility.Comms;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.event.ActionEvent;
@@ -19,28 +20,27 @@ import javafx.stage.Stage;
  * index
  */
 public class Utility extends Stage {
-
-    private Comms communicator;
-    private ArrayDeque<String> messages = new ArrayDeque<String>();
+    private Vector<String> messages = new Vector<String>();
+    private int position;
     private GridPane r;
 
-    private Utility(Comms arg0, ArrayDeque<String> messages, double x, double y) {
-        this(arg0);
+    private Utility(Vector<String> messages, int po, double x, double y) {
+        this();
+        position = po;
         if(messages.size() > 0)
-            addText(messages.getFirst());
+            addText(messages.get(0));
         else
             update();
-        communicator.setUtility(this);
+        Manager.C.setUtility(this);
         this.messages = messages;
         this.setX(x);
         this.setY(y);
     }
 
-    public Utility(Comms arg0) {
+    public Utility() {
         super();
-
-        communicator = arg0;
-        communicator.setUtility(this);
+        Manager.C.addWindow(this);
+        Manager.C.setUtility(this);
         // Window Setup
         this.setTitle("Fite");
 
@@ -57,7 +57,7 @@ public class Utility extends Stage {
         });
         this.setScene(sc);
         this.setOnCloseRequest(event -> {
-            new Utility(communicator, messages, this.getX(), this.getY());
+            new Utility(messages, position, this.getX(), this.getY());
         });
         // Display Screen
         this.setResizable(false);
@@ -66,18 +66,18 @@ public class Utility extends Stage {
 
     public void update() {
         if (messages.size() > 0)
-            ((Text) r.getChildren().get(0)).setText(messages.getFirst());
+            ((Text) r.getChildren().get(0)).setText(messages.get(position));
         else {
-            if (communicator.isWin()) {
+            if (Manager.C.isWin()) {
                 new Message("--YOU WIN!--", 72);
-                communicator.getDisplay().close();
-                communicator.getLoadout().close();
-                communicator.getUtility().close();
-            } else if (communicator.isLoose()) {
+                Manager.C.getDisplay().close();
+                Manager.C.getLoadout().close();
+                Manager.C.getUtility().close();
+            } else if (Manager.C.isLoose()) {
                 new Message("--YOU LOOSE!--", 64);
-                communicator.getDisplay().close();
-                communicator.getLoadout().close();
-                communicator.getUtility().close();
+                Manager.C.getDisplay().close();
+                Manager.C.getLoadout().close();
+                Manager.C.getUtility().close();
             } else {
                 r.setOnMouseClicked(event -> {
                 });
@@ -91,11 +91,22 @@ public class Utility extends Stage {
             r.getChildren().clear();
             r.getChildren().add(new Text(Text));
             r.setOnMouseClicked(event -> {
-                messages.removeFirst();
+                position++;
                 update();
             });
+            r.setOnKeyPressed(event -> {
+                if(event.getCode() == KeyCode.ESCAPE) {
+                    if(position > 0)
+                        position--;
+                    update();
+                }
+                if(event.getCode() == KeyCode.SPACE) {
+                    position++;
+                    update();
+                }
+            });
         }
-        messages.addLast(Text);
+        messages.add(Text);
     }
 
     public void doThings() {
@@ -113,7 +124,7 @@ public class Utility extends Stage {
     public void attack() {
         r.getChildren().clear();
         int i = 0;
-        for(Enemy e : communicator.getEnemies()) {
+        for(Enemy e : Manager.C.getEnemies()) {
             Button b = new Button(e.getName());
             b.setPrefHeight(100);
             int cur = i;
@@ -121,7 +132,7 @@ public class Utility extends Stage {
                 int index = cur;
                 @Override
                 public void handle(ActionEvent arg0) {
-                    communicator.Command("att p " + index);
+                    Manager.C.command("att p " + index);
                 }
             });
             r.add(b,i,0);
@@ -132,7 +143,7 @@ public class Utility extends Stage {
     public void equip() {
         r.getChildren().clear();
         int i = 0;
-        for(Weapon e : communicator.getWeapons()) {
+        for(Weapon e : Manager.C.getWeapons()) {
             Button b = new Button(e.getName());
             b.setPrefHeight(50);
             int cur = i;
@@ -140,10 +151,10 @@ public class Utility extends Stage {
                 int index = cur;
                 @Override
                 public void handle(ActionEvent arg0) {
-                    communicator.Command("use " + index);
+                    Manager.C.command("use " + index);
                 }
             });
-            r.add(b,i%(communicator.getWeapons().size()/2),i/(communicator.getWeapons().size()/2));
+            r.add(b,i%(Manager.C.getWeapons().size()/2),i/(Manager.C.getWeapons().size()/2));
             ++i;
         }
     }

@@ -3,6 +3,7 @@ package Displays;
 import javafx.scene.text.Text;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import Statics.Manager;
 import Structs.Inspectable;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -14,6 +15,7 @@ public class Inspect extends Stage {
         r.setAlignment(Pos.TOP_LEFT);
         Scene sc = new Scene(r, 700, 200);
         this.setScene(sc);
+        Manager.C.addWindow(this);
         // Display Screen
         this.show();
     }
@@ -22,6 +24,7 @@ public class Inspect extends Stage {
         this.setTitle(ins.getClass().getSimpleName());
         Scene sc = new Scene(new StackPane(ins.toUI()), 700, 200);
         this.setScene(sc);
+        Manager.C.addWindow(this);
         // Display Screen
         this.show();
     }

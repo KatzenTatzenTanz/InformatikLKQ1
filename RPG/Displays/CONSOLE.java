@@ -1,6 +1,6 @@
 package Displays;
 
-import Utility.Comms;
+import Statics.Manager;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
@@ -11,13 +11,10 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.text.Text;
 
 public class CONSOLE extends Stage {
-
-    private Comms communicator;
     private Text console = new Text();
     private TextField input = new TextField();
 
-    public CONSOLE(Comms args, boolean show) {
-        this.communicator = args;
+    public CONSOLE(boolean show) {
         this.setTitle("Console");
         BorderPane r = new BorderPane();
         ScrollPane sp = new ScrollPane(console);
@@ -31,7 +28,7 @@ public class CONSOLE extends Stage {
 
             if(event.getCode() == KeyCode.ENTER) {
                 log(input.getText());
-                communicator.Command(input.getText());
+                Manager.C.command(input.getText());
             }
         });
         console.wrappingWidthProperty().bind(this.widthProperty());
