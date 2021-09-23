@@ -1,6 +1,6 @@
 package Displays;
 import Statics.Manager;
-import Structs.Weapon;
+import Structs.Usable;
 
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -48,7 +48,7 @@ public class Loadout extends Stage {
 
     public void update() {
         r.getChildren().clear();
-        for (Weapon we : Manager.C.getWeapons()) {
+        for (Usable we : Manager.C.getInventory()) {
             r.getChildren().add(we.toUI());
         }
         r.setAlignment(Pos.TOP_LEFT);

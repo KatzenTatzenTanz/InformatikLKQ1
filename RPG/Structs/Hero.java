@@ -1,8 +1,18 @@
 package Structs;
 
+import java.util.ArrayList;
+
 import Displays.Inspect;
+import Statics.TypeLists;
 import Statics.TypeWeakness;
 import javafx.scene.Node;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.geometry.Pos;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 
@@ -19,10 +29,6 @@ public class Hero implements Inspectable {
         e.setHp(e.getHp()-dmg);
         return dmg;
     }
-
-
-
-
 
     public Hero(Weapon weapon, String name, int hp, int def, int type) {
         this.weapon = weapon;
@@ -120,5 +126,90 @@ public class Hero implements Inspectable {
             new Inspect(getWeapon());           
         });
         return r;
+    }
+
+    @Override
+    public Node getEditor() {
+        Text NameTag = new Text("Name:");
+        TextField NameInput = new TextField(this.name);
+        NameInput.setOnKeyTyped(event -> {
+            this.name = NameInput.getText();
+        });
+        NameInput.setPromptText("Name");
+        HBox Name = new HBox(NameTag,NameInput);
+        Name.setAlignment(Pos.CENTER);
+        Name.setSpacing(16);
+
+        Text HealthTag = new Text("Start HP:");
+        TextField HealthInput = new TextField(Integer.toString(this.hp));
+        HealthInput.setOnKeyTyped(event -> {
+            if(!HealthInput.getText().matches("\\d*")) HealthInput.setText(HealthInput.getText().replaceAll("[^\\d]",""));
+            if(HealthInput.getText().length() > 0) this.hp = Integer.parseInt(HealthInput.getText());
+        });
+        HealthInput.setPromptText("Start HP");
+        HBox Health = new HBox(HealthTag,HealthInput);
+        Health.setAlignment(Pos.CENTER);
+        Health.setSpacing(16);
+                      
+        Text DefenseTag = new Text("Defense:");
+        TextField DefenseInput = new TextField(Integer.toString(this.def));
+        DefenseInput.setOnKeyTyped(event -> {
+            if(!DefenseInput.getText().matches("\\d*")) DefenseInput.setText(DefenseInput.getText().replaceAll("[^\\d]",""));
+            if(DefenseInput.getText().length() > 0) this.def = Integer.parseInt(DefenseInput.getText());
+        });
+        DefenseInput.setPromptText("Defense");
+        HBox Defense = new HBox(DefenseTag,DefenseInput);
+        Defense.setAlignment(Pos.CENTER);
+        Defense.setSpacing(16);
+
+
+        ArrayList<String> TypeTypes = new ArrayList<String>();
+
+        //No fix for this as <Weapons> would result in an unnecessary cast, breaking the code
+        for(String x : TypeWeakness.Types)
+            TypeTypes.add(x);
+        ChoiceBox<String> TypeType = new ChoiceBox<String>(FXCollections.observableArrayList(TypeTypes));
+        TypeType.getSelectionModel().selectFirst();
+
+        ArrayList<Class<Weapon>> WeaponTypes = new ArrayList<Class<Weapon>>();
+
+        //No fix for this as <Weapons> would result in an unnecessary cast, breaking the code
+        for(Class x : TypeLists.WeaponTypes)
+            WeaponTypes.add(x);
+        ArrayList<String> HeroTypeNames = new ArrayList<String>();
+        WeaponTypes.forEach(x -> HeroTypeNames.add(x.getSimpleName()));
+
+        ChoiceBox<String> WeaponType = new ChoiceBox<String>(FXCollections.observableArrayList(HeroTypeNames));
+        WeaponType.getSelectionModel().select(this.type);
+
+        Node Weapon = this.weapon.getEditor();
+
+        VBox HeroDisplay = new VBox(Name, Health, Defense, TypeType, Weapon, WeaponType);
+        HeroDisplay.setSpacing(16);
+
+
+        WeaponType.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>(){
+            Node Weap = Weapon;
+            @Override
+            public void changed(ObservableValue<? extends String> arg0, String arg1, String arg2) {
+                try {
+                    weapon = WeaponTypes.get(WeaponType.getSelectionModel().getSelectedIndex()).getConstructor().newInstance();
+                    int index = HeroDisplay.getChildren().indexOf(Weap);
+                    HeroDisplay.getChildren().set(index, weapon.getEditor());
+                    Weap = HeroDisplay.getChildren().get(index);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        TypeType.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>(){
+            @Override
+            public void changed(ObservableValue<? extends String> arg0, String arg1, String arg2) {
+                type = TypeTypes.indexOf(arg0.getValue());
+            }
+        });
+
+        return HeroDisplay;
     }
 }

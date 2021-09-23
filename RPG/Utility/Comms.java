@@ -9,18 +9,19 @@ import Displays.Utility;
 import Statics.TypeWeakness;
 import Structs.Enemy;
 import Structs.Hero;
-import Structs.Weapon;
+import Structs.Usable;
 
 import javafx.stage.Stage;
 
 public class Comms {
+    //Only Single Hero Support do reduce play setup Time
     private Hero hero;
     private Display display;
     private Loadout loadout;
     private Utility utility;
     private CONSOLE console;
     private ArrayList<Enemy> enemies;
-    private ArrayList<Weapon> weapons;
+    private ArrayList<Usable> inventory;
     private boolean Win;
     private boolean Loose;
 
@@ -96,12 +97,10 @@ public class Comms {
                     }
                     break;
                 case "use":
-                    Weapon temp = new Weapon(weapons.get(Integer.parseInt(args[1])));
-                    weapons.set(Integer.parseInt(args[1]),new Weapon(hero.getWeapon()));
+                    Usable temp = inventory.get(Integer.parseInt(args[1]));
+                    command("log " + hero.getName() + " used " + temp.getName() + " instead of " + hero.getWeapon().getName());
+                    command("say " + hero.getName() + " uses " + temp.getName() + " instead of " + hero.getWeapon().getName() + ".");
                     loadout.update();
-                    command("log " + hero.getName() + " equiped " + temp.getName() + " instead of " + hero.getWeapon().getName());
-                    command("say " + hero.getName() + " equips " + temp.getName() + " instead of " + hero.getWeapon().getName() + ".");
-                    hero.setWeapon(temp);
                     update();
                     break;
                 case "say":
@@ -196,12 +195,12 @@ public class Comms {
         this.enemies = enemies;
     }
 
-    public ArrayList<Weapon> getWeapons() {
-        return this.weapons;
+    public ArrayList<Usable> getInventory() {
+        return this.inventory;
     }
 
-    public void setWeapons(ArrayList<Weapon> weapons) {
-        this.weapons = weapons;
+    public void setInventory(ArrayList<Usable> inventory) {
+        this.inventory = inventory;
     }
 
     public void addWindow(Stage s) {

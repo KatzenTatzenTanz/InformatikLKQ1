@@ -4,7 +4,7 @@ import java.util.Vector;
 
 import Statics.Manager;
 import Structs.Enemy;
-import Structs.Weapon;
+import Structs.Usable;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.input.KeyCode;
@@ -143,7 +143,7 @@ public class Utility extends Stage {
     public void equip() {
         r.getChildren().clear();
         int i = 0;
-        for(Weapon e : Manager.C.getWeapons()) {
+        for(Usable e : Manager.C.getInventory()) {
             Button b = new Button(e.getName());
             b.setPrefHeight(50);
             int cur = i;
@@ -154,7 +154,7 @@ public class Utility extends Stage {
                     Manager.C.command("use " + index);
                 }
             });
-            r.add(b,i%(Manager.C.getWeapons().size()/2),i/(Manager.C.getWeapons().size()/2));
+            r.add(b,i%(Manager.C.getInventory().size()/2),i/(Manager.C.getInventory().size()/2));
             ++i;
         }
     }

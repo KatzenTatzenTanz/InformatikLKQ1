@@ -1,17 +1,37 @@
 package Structs;
 
+import Statics.Manager;
 import Statics.TypeWeakness;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 
-public class Weapon implements Inspectable {
+public class Weapon implements Usable {
     private String name;
     private int[] damage;
     private int Type;
 
     int attack() {
         return damage[(int)(Math.random() * damage.length)];
+    }
+
+    @Override
+    public void use() {
+        Manager.C.getInventory().set(Manager.C.getInventory().indexOf(this),Manager.C.getHero().getWeapon());
+        Manager.C.getHero().setWeapon(this);
+    }
+
+    @Override
+    public String getName() {
+        return this.name;
+    }
+
+    @Override
+    public void setName(String name) {
+        this.name = name;
     }
 
 
@@ -25,14 +45,6 @@ public class Weapon implements Inspectable {
         this.name = name;
         this.damage = damage;
         this.Type = Type;
-    }
-
-    public String getName() {
-        return this.name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public int[] getDamage() {
@@ -86,5 +98,22 @@ public class Weapon implements Inspectable {
         attackTypes = attackTypes.substring(0, attackTypes.length()-2) + "]";
         r.getChildren().add(new Text("Damage: " + attackTypes));
         return r;
+    }
+
+    @Override
+    public Node getEditor() {
+        Text NameTag = new Text("WeaponName:");
+        TextField NameInput = new TextField(this.name);
+        NameInput.setOnKeyTyped(event -> {
+            this.name = NameInput.getText();
+        });
+        NameInput.setPromptText("Name");
+        HBox Name = new HBox(NameTag,NameInput);
+        Name.setAlignment(Pos.CENTER);
+        Name.setSpacing(16);
+
+        VBox WeaponDisplay = new VBox(Name);           
+        WeaponDisplay.setSpacing(16);
+        return WeaponDisplay;
     }
 }
