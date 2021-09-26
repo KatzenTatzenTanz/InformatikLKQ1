@@ -65,35 +65,43 @@ public class Utility extends Stage {
     }
 
     public void update() {
-        if (messages.size() > 0)
+        if (messages.size() > position)
             ((Text) r.getChildren().get(0)).setText(messages.get(position));
         else {
             if (Manager.C.isWin()) {
+                //Player won, create popup saying they won
                 new Message("--YOU WIN!--", 72);
                 Manager.C.getDisplay().close();
                 Manager.C.getLoadout().close();
                 Manager.C.getUtility().close();
             } else if (Manager.C.isLoose()) {
+                //Player lost, create popup saying the lost
                 new Message("--YOU LOOSE!--", 64);
                 Manager.C.getDisplay().close();
                 Manager.C.getLoadout().close();
                 Manager.C.getUtility().close();
             } else {
+                //remove MouseClickHandler
                 r.setOnMouseClicked(event -> {
                 });
+                //let player decide wether to attack or to use an item
                 doThings();
             }
         }
     }
 
     public void addText(String Text) {
-        if (messages.isEmpty()) {
+        //add Text to a stack which will be handled by r.MouseClickedEvent
+        if (messages.size() == position) {
+            position = 0;
+            messages.clear();
             r.getChildren().clear();
             r.getChildren().add(new Text(Text));
             r.setOnMouseClicked(event -> {
                 position++;
                 update();
             });
+            //Does not work, doesnt impact the game further than not allowing you to move backwards in the Text queue, support for it exists, JavaFX has failed me
             r.setOnKeyPressed(event -> {
                 if(event.getCode() == KeyCode.ESCAPE) {
                     if(position > 0)
@@ -110,6 +118,8 @@ public class Utility extends Stage {
     }
 
     public void doThings() {
+        messages.clear();
+        position = 0;
         r.getChildren().clear();
         r.add(new Button("Attack"),0,0);
         r.add(new Button("Inventory"),1,0);
@@ -117,6 +127,7 @@ public class Utility extends Stage {
         ((Button)r.getChildren().get(1)).setPrefHeight(100);
         ((Button)r.getChildren().get(0)).setPrefWidth(300);
         ((Button)r.getChildren().get(1)).setPrefWidth(300);
+        //when the Buttons are clicked, move to the next UI
         ((Button)r.getChildren().get(0)).setOnMouseClicked(event -> {attack();});
         ((Button)r.getChildren().get(1)).setOnMouseClicked(event -> {equip();});
     }
@@ -125,9 +136,11 @@ public class Utility extends Stage {
         r.getChildren().clear();
         int i = 0;
         for(Enemy e : Manager.C.getEnemies()) {
+            //create array of enemy names
             Button b = new Button(e.getName());
             b.setPrefHeight(100);
             int cur = i;
+            //give each button a corresponding command, handled by the command manager/communications class
             b.setOnAction(new EventHandler<ActionEvent>() {
                 int index = cur;
                 @Override
@@ -144,9 +157,11 @@ public class Utility extends Stage {
         r.getChildren().clear();
         int i = 0;
         for(Usable e : Manager.C.getInventory()) {
+            //create array of item names
             Button b = new Button(e.getName());
             b.setPrefHeight(50);
             int cur = i;
+            //give each button a corresponding command, handled by the command manager/communications class
             b.setOnAction(new EventHandler<ActionEvent>() {
                 int index = cur;
                 @Override
@@ -154,7 +169,10 @@ public class Utility extends Stage {
                     Manager.C.command("use " + index);
                 }
             });
-            r.add(b,i%(Manager.C.getInventory().size()/2),i/(Manager.C.getInventory().size()/2));
+            //Create a grid
+            r.add(b,
+                (Manager.C.getInventory().size()>1)?i/(Manager.C.getInventory().size()/2):0,
+                (Manager.C.getInventory().size()>1)?i%(Manager.C.getInventory().size()/2):i);
             ++i;
         }
     }

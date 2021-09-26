@@ -9,6 +9,7 @@ import javafx.scene.Scene;
 
 public class Message extends Stage {
     public Message(String txt, int s) {
+        //display text
         this.setTitle(txt);
         Text t = new Text(txt);
         t.setFont(new Font("Arial",s));

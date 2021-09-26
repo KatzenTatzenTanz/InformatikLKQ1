@@ -65,7 +65,7 @@ public class Display extends Stage {
 
         for(int i = Enemies.getChildren().size(); i < enemysize; ++i) {
             Enemies.getChildren().add(createEnemyUI());
-            // protective layer since java gives an error in "int index = 1"
+            // protective layer since java gives an error if "int index = i"
             int cur = i;
             Enemies.getChildren().get(i).setOnMouseClicked(new EventHandler<MouseEvent>() {
                 int index = cur;
@@ -83,7 +83,7 @@ public class Display extends Stage {
             getEnemyName((FlowPane)Enemies.getChildren().get(i)).setText(Manager.C.getEnemies().get(i).getName());
         }
     }
-
+    //Create Display in which the Enemy UI and the Hero hook into
     public static VBox createFightMainUI() {
         VBox r = new VBox();
         r.setFillWidth(true);
@@ -116,6 +116,7 @@ public class Display extends Stage {
         return r;
     }
 
+    //Create Enemy UI where single Enemies Hook into
     public static FlowPane createEnemyUI() {
 
         FlowPane Enemy = new FlowPane(Orientation.VERTICAL);

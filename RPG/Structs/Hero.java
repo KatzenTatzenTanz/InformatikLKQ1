@@ -25,9 +25,18 @@ public class Hero implements Inspectable {
 
 
     public int attack(Enemy e) {
+        //calculate Weakness of enemy to weapon and damage enemy based on that
         int dmg = Math.max(0,(int)(weapon.attack() * TypeWeakness.calculateStrength(e.getType(), weapon.getType())) - e.getDef());
         e.setHp(e.getHp()-dmg);
         return dmg;
+    }
+
+    public Hero() {
+        this.weapon = new Weapon();
+        this.name = "";
+        this.hp = 100;
+        this.def = 0;
+        this.type = 0;
     }
 
     public Hero(Weapon weapon, String name, int hp, int def, int type) {
@@ -114,6 +123,7 @@ public class Hero implements Inspectable {
             "}";
     }
 
+    //important to inspector by clicking on hero
     @Override
     public Node toUI() {
         VBox r = new VBox();
@@ -127,11 +137,13 @@ public class Hero implements Inspectable {
         });
         return r;
     }
-
+    //important to EnemySelect.java
     @Override
     public Node getEditor() {
+        Text Header = new Text(this.getClass().getSimpleName() + ":");
         Text NameTag = new Text("Name:");
         TextField NameInput = new TextField(this.name);
+        //update name with every keystroke
         NameInput.setOnKeyTyped(event -> {
             this.name = NameInput.getText();
         });
@@ -142,7 +154,9 @@ public class Hero implements Inspectable {
 
         Text HealthTag = new Text("Start HP:");
         TextField HealthInput = new TextField(Integer.toString(this.hp));
+        //update health on every keystroke
         HealthInput.setOnKeyTyped(event -> {
+            //removes anything but numbers
             if(!HealthInput.getText().matches("\\d*")) HealthInput.setText(HealthInput.getText().replaceAll("[^\\d]",""));
             if(HealthInput.getText().length() > 0) this.hp = Integer.parseInt(HealthInput.getText());
         });
@@ -150,7 +164,8 @@ public class Hero implements Inspectable {
         HBox Health = new HBox(HealthTag,HealthInput);
         Health.setAlignment(Pos.CENTER);
         Health.setSpacing(16);
-                      
+        
+        //same thing as HealthTag but for defense
         Text DefenseTag = new Text("Defense:");
         TextField DefenseInput = new TextField(Integer.toString(this.def));
         DefenseInput.setOnKeyTyped(event -> {
@@ -163,6 +178,8 @@ public class Hero implements Inspectable {
         Defense.setSpacing(16);
 
 
+        /* We first get all the types and copy them into a usable ArrayList, after this we create a slectable List and inset it into a Selector */
+
         ArrayList<String> TypeTypes = new ArrayList<String>();
 
         //No fix for this as <Weapons> would result in an unnecessary cast, breaking the code
@@ -170,6 +187,10 @@ public class Hero implements Inspectable {
             TypeTypes.add(x);
         ChoiceBox<String> TypeType = new ChoiceBox<String>(FXCollections.observableArrayList(TypeTypes));
         TypeType.getSelectionModel().selectFirst();
+
+
+        /* We first get all the types and copy them into a usable ArrayList, after this we create a slectable List and inset it into a Selector */
+        /* Afterwards we tell the selector to delete the Accommodating UI element and replace it with the one of the required type */
 
         ArrayList<Class<Weapon>> WeaponTypes = new ArrayList<Class<Weapon>>();
 
@@ -180,11 +201,14 @@ public class Hero implements Inspectable {
         WeaponTypes.forEach(x -> HeroTypeNames.add(x.getSimpleName()));
 
         ChoiceBox<String> WeaponType = new ChoiceBox<String>(FXCollections.observableArrayList(HeroTypeNames));
-        WeaponType.getSelectionModel().select(this.type);
+        WeaponType.getSelectionModel().select(this.weapon.getClass().getSimpleName());
 
         Node Weapon = this.weapon.getEditor();
 
-        VBox HeroDisplay = new VBox(Name, Health, Defense, TypeType, Weapon, WeaponType);
+        //Using css here because it does the work of setting the background for us, one of the very few cases where css is smarter to use than the built in functions
+        Weapon.setStyle("-fx-background-color: #00000022");
+
+        VBox HeroDisplay = new VBox(Header, Name, Health, Defense, TypeType, WeaponType, Weapon);
         HeroDisplay.setSpacing(16);
 
 
@@ -197,6 +221,7 @@ public class Hero implements Inspectable {
                     int index = HeroDisplay.getChildren().indexOf(Weap);
                     HeroDisplay.getChildren().set(index, weapon.getEditor());
                     Weap = HeroDisplay.getChildren().get(index);
+                    Weap.setStyle("-fx-background-color: #00000022");
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

@@ -97,9 +97,7 @@ public class Comms {
                     }
                     break;
                 case "use":
-                    Usable temp = inventory.get(Integer.parseInt(args[1]));
-                    command("log " + hero.getName() + " used " + temp.getName() + " instead of " + hero.getWeapon().getName());
-                    command("say " + hero.getName() + " uses " + temp.getName() + " instead of " + hero.getWeapon().getName() + ".");
+                    inventory.get(Integer.parseInt(args[1])).use();
                     loadout.update();
                     update();
                     break;

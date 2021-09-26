@@ -9,6 +9,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 
 public class Inspect extends Stage {
+    //display the .toString() of an object
     public Inspect(Object obj) {
         this.setTitle(obj.getClass().getSimpleName());
         StackPane r = new StackPane(new Text(obj.toString()));
@@ -19,7 +20,7 @@ public class Inspect extends Stage {
         // Display Screen
         this.show();
     }
-
+    //get the UI of an object if it is possible
     public Inspect(Inspectable ins) {
         this.setTitle(ins.getClass().getSimpleName());
         Scene sc = new Scene(new StackPane(ins.toUI()), 700, 200);

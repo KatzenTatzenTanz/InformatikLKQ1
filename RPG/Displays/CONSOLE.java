@@ -13,7 +13,7 @@ import javafx.scene.text.Text;
 public class CONSOLE extends Stage {
     private Text console = new Text();
     private TextField input = new TextField();
-
+    //only display console if needed
     public CONSOLE(boolean show) {
         this.setTitle("Console");
         BorderPane r = new BorderPane();
@@ -25,7 +25,7 @@ public class CONSOLE extends Stage {
 
         input.setPromptText("Command:");
         input.setOnKeyPressed(event -> {
-
+            //if enter pressed: send command to Comms
             if(event.getCode() == KeyCode.ENTER) {
                 log(input.getText());
                 Manager.C.command(input.getText());

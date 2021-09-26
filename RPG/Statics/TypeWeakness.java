@@ -21,6 +21,8 @@ public class TypeWeakness {
     "2222423" +
     "4322322";
 
+    //Using strings here since this part is hard coded and Strings are nicer to work with than int[] due to int arrays being wider than Strings
+
     public static double calculateStrength(int def, int att) {
         return (Strengths.charAt(att+def*TypeC)-'0')*0.5;
     }
